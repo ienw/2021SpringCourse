@@ -1,8 +1,28 @@
 import models from './model.js';
+import { AuthenticationError } from 'apollo-server-express';
+import { login } from './passport/authController.js';
 
 const Resolvers = {
   Query: {
-    stations: (parent, args) => {
+    login: async (parent, args, { req, res }) => {
+      try {
+        req.body = args
+        const result = await login(req, res);
+        console.log("login result", result);
+        return result;
+      } catch (e) {
+        console.log(e);
+        throw new AuthenticationError("Login failed");
+      }
+    },
+
+    stations: (parent, args, context) => {
+
+      console.log("user is", context.user)
+      if (!context.user) {
+        throw new AuthenticationError("Requires logged in user")
+      }
+
       const limit = args.limit || 10
       const { topRight, bottomLeft } = args
 
