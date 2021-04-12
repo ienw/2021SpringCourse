@@ -54,7 +54,13 @@ const Resolvers = {
         return models.stations.find().populate("Connections").limit(limit).exec()
       }
     },
-    station: (parent, args) => {
+    station: (parent, args, context) => {
+      
+      console.log("user is", context.user)
+      if (!context.user) {
+        throw new AuthenticationError("Requires logged in user")
+      }
+
       return models.stations
         .findById(args.id)
         .populate("Connections")
@@ -63,16 +69,33 @@ const Resolvers = {
  },
 
  Mutation: {
-   removeStation: (parent, args) => {
+   removeStation: (parent, args, context) => {
+     
+    console.log("user is", context.user)
+    if (!context.user) {
+      throw new AuthenticationError("Requires logged in user")
+    }
+
     return models.stations.deleteOne({ _id: args.id });
    },
 
-   modifyStation: (parent, args) => {
+   modifyStation: (parent, args, context) => {
+     
+      console.log("user is", context.user)
+      if (!context.user) {
+        throw new AuthenticationError("Requires logged in user")
+      }
+
      const argsWithoutId = {...args, id: undefined }
      return models.stations.updateOne({_id: args.id}, argsWithoutId);
    },
 
-   addStation: async (parent, args) => {
+   addStation: async (parent, args, context) => {
+
+    console.log("user is", context.user)
+    if (!context.user) {
+      throw new AuthenticationError("Requires logged in user")
+    }
 
     const connections = args.Connections || []
 

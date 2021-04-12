@@ -1,5 +1,21 @@
 ### Example queries
 
+```graphql
+query {
+  login(username:"lily",password:"123") {
+    user {
+      _id,
+      username
+    }
+  	token
+  }
+}
+```
+
+queries other than login require token in headers, example:
+```json
+{"token":"eyJhbGciOiJIUzI1N...."}
+```
 
 ```graphql
 query {
