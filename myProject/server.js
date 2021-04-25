@@ -2,6 +2,7 @@ import { ApolloServer } from 'apollo-server-express';
 import express from 'express';
 import schemas from './schemas/index.js';
 import resolvers from './resolvers/index.js';
+import checkAuth from './passport/checkAuth.js';
 import db from './db.js'
 
 (async () => {
@@ -9,6 +10,17 @@ import db from './db.js'
     const server = new ApolloServer({
       typeDefs: schemas,
       resolvers,
+      context: async ({req, res}) => {
+        if (req) {
+          const user = await checkAuth(req, res);
+          // console.log('app', user);
+          return {
+            req,
+            res,
+            user,
+          };
+        }
+      },
     });
 
   
