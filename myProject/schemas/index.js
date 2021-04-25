@@ -1,58 +1,23 @@
 import { gql } from 'apollo-server-express';
 import tireSchema from './tireSchema.js';
+import customerSchema from './customerSchema.js';
+import internalTransactionsSchema from './internalTransactionsSchema.js';
 
-const customerSchema = gql`
-    type Customer {
-      _id: ID!
-      name: String!
-      carNumber: String!
-      phone: String!
-      carType: String! 
-      tireSize: String! 
-      miles: Int! 
-      description: String!
-   }
-
-   extend type Query {
-    customers: [Customer!]!
+const userSchema = gql`
+  type User {
+    _id: ID!,
+    username: String!
   }
 
-  extend type Mutation {
-    createCustomer(
-      name: String!
-      carNumber: String!
-      phone: String!
-      carType: String! 
-      tireSize: String!
-      miles: Int! 
-      description: String!
-      ): Customer!
-    }
-  `;
- 
-const internalTransactionsSchema = gql`
-  type InternalTransaction {
-    _id : ID!
-    tire: ID!
-    quantity: Int!
-    price: Int!
-    date: Date!
+  type Login {
+    user: User!,
+    token: String!
   }
 
   extend type Query {
-    internalTransactions: [InternalTransaction!]!
- }
-
- extend type Mutation {
-   createInternalTransaction(
-    tire: ID!
-    quantity: Int!
-    price: Int!
-    date: Date!
-     ): InternalTransaction!
-   }
- `;
-
+    login(username: String!, password: String!): Login!
+  }
+`;
 
 const linkSchema = gql`
   scalar Date
@@ -65,6 +30,4 @@ const linkSchema = gql`
    }
 `;
 
-const schemas = [linkSchema, tireSchema, customerSchema, internalTransactionsSchema]
-
-export default schemas;
+export default [linkSchema, customerSchema, tireSchema, internalTransactionsSchema, userSchema];
