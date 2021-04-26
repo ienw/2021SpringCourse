@@ -35,7 +35,13 @@ const customerTransactions = mongoose.model('customerTransactions', new Schema({
   date: Date,
 }));
 
+const users = mongoose.model('users', new Schema({
+  username: String,
+  password: String, 
+}));
+
 const models = {
+  users,
   tires,
   customers,
   internalTransactions,
