@@ -16,6 +16,22 @@ const getTires = gql`
   }
 `;
 
+
+const getCustomers = gql`
+  query {
+    customers {
+      _id,
+      name,
+      carNumber,
+      phone,
+      carType, 
+      tireSize,
+      miles, 
+      description
+    }
+  }
+`;
+
 const Page1 = () => {
   const [showResult, setShowResult] = React.useState(false);
 
@@ -40,36 +56,37 @@ const Page1 = () => {
 
 const Page2 = () => {
 
+  const { data, loading, error } = useQuery(getCustomers)
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>
+  }
+
   return (
     <table>
-      <tr>
-        <th>Name</th>
-        <th>Phone number</th>
-        <th>Car</th>
-        <th>Mileage</th>
-        <th>Other</th>
-      </tr>
-      <tr>
-        <td>Lily</td>
-        <td>1234567</td>
-        <td>BMW 2020</td>
-        <td>1000km</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>Lily2</td>
-        <td>4567123</td>
-        <td>Audi A4</td>
-        <td>60,000km</td>
-        <td>Special customer</td>
-      </tr>
-      <tr>
-        <td>Lily3</td>
-        <td>1267345</td>
-        <td>Toyota corola</td>
-        <td>99900km</td>
-        <td>-</td>
-      </tr>
+       <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone number</th>
+          <th>Car</th>
+          <th>Mileage</th>
+          <th>Other</th>
+        </tr>
+      </thead>
+      <tbody>
+      {data.customers.map(customer => 
+        <tr>
+          <td>{customer.name}</td>
+          <td>{customer.phone}</td>
+          <td>{customer.carType}</td>
+          <td>{customer.miles} miles</td>
+          <td>{customer.description}</td>
+        </tr>
+      )}
       <tr>
         <td><input /></td>
         <td><input /></td>
@@ -77,6 +94,7 @@ const Page2 = () => {
         <td><input /></td>
         <td><input /><button>Add customer</button></td>
       </tr>
+      </tbody>
     </table>
   )
 }
