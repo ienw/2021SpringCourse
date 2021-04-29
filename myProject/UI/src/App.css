@@ -18,6 +18,15 @@ nav {
   font-size: 20px;
 }
 
+label {
+  font-size: 17px;
+  padding: 10px 0;
+}
+label > input {
+  margin-top: 5px;
+  display: block;
+}
+
 th,td {
   padding: 10px;
 }

@@ -1,7 +1,20 @@
 import React from 'react';
 import './App.css';
 import gql from "graphql-tag";
-import { useQuery } from "react-apollo";
+import { useQuery, useLazyQuery } from "react-apollo";
+
+
+const loginQuery = gql`
+  query($username: String!, $password: String!) {
+    login(username: $username, password: $password){
+      token,
+      user {
+        username,
+        _id
+      }
+    }
+  }
+`;
 
 const getTires = gql`
   query {
@@ -31,6 +44,47 @@ const getCustomers = gql`
     }
   }
 `;
+
+const Page0 = () => {
+  const [runQuery, { loading, data, error }] = useLazyQuery(loginQuery)
+  console.log(data);
+
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
+
+  if (loading) {
+    return "Loading..."
+  }
+
+  if (data && data.login.token) {
+    // TODO add creation forms here
+    return "you are logged in"
+  }
+
+  return (
+    <>
+      <h1>Log In Here</h1>
+      <label>
+        Username
+        <input onChange={(event) => { setUsername(event.target.value)}} value={username} />
+      </label>
+      <label>
+        Password
+        <input onChange={(event) => setPassword(event.target.value)} value={password} type="password" />
+      </label>
+      <button
+        onClick={() => {
+          console.log("Logging in as", username, password);
+          runQuery({ variables: { username, password }})
+        }}
+      >Log in</button>
+      {error && (
+        <div>Error: {error.message}</div>
+      )}
+    </>
+  )
+
+}
 
 const Page1 = () => {
   const [showResult, setShowResult] = React.useState(false);
@@ -166,6 +220,7 @@ function App() {
         <span style={{ padding: "10px 30px"}} onClick={() => setPage("2")}>customers</span>
         <span style={{ padding: "10px 30px"}} onClick={() => setPage("3")}>Inventory</span>
         <span style={{ padding: "10px 30px"}} onClick={() => setPage("4")}>Statistics</span>
+        <span style={{ padding: "10px 30px"}} onClick={() => setPage("0")}>Admin</span>
       </nav>
       <header className="App-header">
         {page === "1" && (
@@ -179,6 +234,9 @@ function App() {
         )}
         {page === "4" && (
           <Page4 />
+        )}
+        {page === "0" && (
+          <Page0 />
         )}
       </header>
     </div>
