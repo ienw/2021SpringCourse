@@ -45,12 +45,26 @@ const getCustomers = gql`
   }
 `;
 
+const CustomerForm = () => {
+  const [name, setName] = React.useState("");
+
+  return (
+    <>
+      <label>
+        Customer name
+        <input value={name} onChange={event => setName(event.target.value)} />
+      </label>
+    </>
+  )
+}
+
 const Page0 = () => {
   const [runQuery, { loading, data, error }] = useLazyQuery(loginQuery)
   console.log(data);
 
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [selectedForm, setSelectedForm] = React.useState("customer");
 
   if (loading) {
     return "Loading..."
@@ -58,7 +72,25 @@ const Page0 = () => {
 
   if (data && data.login.token) {
     // TODO add creation forms here
-    return "you are logged in"
+    
+    return (
+      <>
+        <h1>Hello {data.login.user.username}</h1>
+        <p>Select which form to use</p>
+        <select value={selectedForm} onChange={event => setSelectedForm(event.target.value)}>
+          <option value="customer">Customer</option>
+          <option value="tire">Tire</option>
+        </select>
+        {selectedForm === "customer" && (
+          <CustomerForm />
+        )}
+        {selectedForm === "tire" && (
+          <div>
+            Make tire form here
+          </div>
+        )}
+      </>
+    )
   }
 
   return (
