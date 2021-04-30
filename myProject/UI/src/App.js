@@ -54,12 +54,12 @@ mutation(
   $fullPrice: Int!
 ) {
   createTire(
-    brand: String!
-    model: String!
-    stock: Int!
-    singlePrice: Int!
-    fullPrice: Int!
-  ): {
+    brand: $brand
+    model: $model
+    stock: $stock
+    singlePrice: $singlePrice
+    fullPrice: $fullPrice
+  ) {
     _id
   }
 }
