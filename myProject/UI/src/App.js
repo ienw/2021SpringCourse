@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import gql from "graphql-tag";
-import { useQuery, useLazyQuery } from "react-apollo";
+import { useQuery, useLazyQuery, useMutation } from "react-apollo";
 
 
 const loginQuery = gql`
@@ -45,50 +45,78 @@ const getCustomers = gql`
   }
 `;
 
-const CustomerForm = () => {
-  const [name, setName] = React.useState("");
-
-  return (
-    <>
-      <label>
-        Customer name
-        <input value={name} onChange={event => setName(event.target.value)} />
-      </label>
-    </>
-  )
+const createTire = gql`
+mutation(
+  $brand: String!
+  $model: String!
+  $stock: Int!
+  $singlePrice: Int!
+  $fullPrice: Int!
+) {
+  createTire(
+    brand: String!
+    model: String!
+    stock: Int!
+    singlePrice: Int!
+    fullPrice: Int!
+  ): {
+    _id
+  }
 }
+`
+
+const createCustomer = gql`
+mutation(
+  $name: String!
+  $carNumber: String!
+  $phone: String!
+  $carType: String! 
+  $tireSize: String!
+  $miles: Int! 
+  $description: String!
+) {
+  createCustomer(
+    name: $name
+    carNumber: $carNumber
+    phone: $phone
+    carType: $carType
+    tireSize: $tireSize
+    miles: $miles
+    description: $description
+  ) {
+    _id
+  }
+}
+`;
 
 const Page0 = () => {
   const [runQuery, { loading, data, error }] = useLazyQuery(loginQuery)
-  console.log(data);
 
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [selectedForm, setSelectedForm] = React.useState("customer");
+  const [token, setToken] = React.useState(localStorage.getItem("token"))
+
+  React.useEffect(() => {
+    if (data && data.login && data.login.token) {
+      console.log("Setting login token to localstorage", data.login.token);
+      localStorage.setItem("token", data.login.token);
+      setToken(data.login.token);
+    }
+  }, [data]);
 
   if (loading) {
     return "Loading..."
   }
 
-  if (data && data.login.token) {
-    // TODO add creation forms here
-    
+  if (token) {
     return (
       <>
-        <h1>Hello {data.login.user.username}</h1>
-        <p>Select which form to use</p>
-        <select value={selectedForm} onChange={event => setSelectedForm(event.target.value)}>
-          <option value="customer">Customer</option>
-          <option value="tire">Tire</option>
-        </select>
-        {selectedForm === "customer" && (
-          <CustomerForm />
-        )}
-        {selectedForm === "tire" && (
-          <div>
-            Make tire form here
-          </div>
-        )}
+        <h1>You are logged in</h1>
+
+        <button onClick={() => {
+          localStorage.removeItem("token");
+          setToken(undefined);
+        }}>Logout</button>
       </>
     )
   }
@@ -142,7 +170,43 @@ const Page1 = () => {
 
 const Page2 = () => {
 
-  const { data, loading, error } = useQuery(getCustomers)
+  const { data, loading, error, refetch } = useQuery(getCustomers, { fetchPolicy: "network-only" });
+
+  const [name, setName] = React.useState("");
+  const [carNumber, setCarNumber] = React.useState("");
+  const [phone, setPhone] = React.useState("");
+  const [carType, setCarType] = React.useState("");
+  const [tireSize, setTireSize] = React.useState("");
+  const [miles, setMiles] = React.useState("");
+  const [description, setDescription] = React.useState("");
+
+  const [mutate] = useMutation(createCustomer);
+
+  const createUser = () => {
+    mutate({
+      variables: {
+        name,
+        carNumber,
+        phone,
+        carType,
+        tireSize,
+        miles: Number(miles),
+        description,
+      },
+      update: () => {
+        refetch();
+        setName("");
+        setCarNumber("");
+        setPhone("");
+        setCarType("");
+        setTireSize("");
+        setMiles("");
+        setDescription("");
+      }
+    })
+  }
+
+  const isLoggedIn = localStorage.getItem("token")
 
   if (loading) {
     return <div>Loading...</div>;
@@ -158,28 +222,53 @@ const Page2 = () => {
         <tr>
           <th>Name</th>
           <th>Phone number</th>
-          <th>Car</th>
+          <th>Car type</th>
+          <th>Car number</th>
+          <th>Tire size</th>
           <th>Mileage</th>
           <th>Other</th>
         </tr>
       </thead>
       <tbody>
+      {isLoggedIn && (
+        <tr>
+          <td>
+            <input value={name} onChange={event => setName(event.target.value)} />
+          </td>
+          <td>
+            <input value={phone} onChange={event => setPhone(event.target.value)}/>
+          </td>
+          <td>
+            <input value={carType} onChange={event => setCarType(event.target.value)} />
+          </td>
+          <td>
+            <input value={carNumber} onChange={event => setCarNumber(event.target.value)} />
+          </td>
+          <td>
+            <input value={tireSize} onChange={event => setTireSize(event.target.value)} />
+          </td>
+          <td>
+            <input value={miles} onChange={event => setMiles(event.target.value)}/>
+          </td>
+          <td>
+            <div style={{display: "flex", alignItems: "center"}}>
+              <input value={description} onChange={event => setDescription(event.target.value)}/>
+              <button style={{ height: "max-content"}} onClick={createUser}>Add customer</button>
+            </div>
+          </td>
+        </tr>
+      )}
       {data.customers.map(customer => 
         <tr>
           <td>{customer.name}</td>
           <td>{customer.phone}</td>
           <td>{customer.carType}</td>
+          <td>{customer.carNumber}</td>
+          <td>{customer.tireSize}</td>
           <td>{customer.miles} miles</td>
           <td>{customer.description}</td>
         </tr>
       )}
-      <tr>
-        <td><input /></td>
-        <td><input /></td>
-        <td><input /></td>
-        <td><input /></td>
-        <td><input /><button>Add customer</button></td>
-      </tr>
       </tbody>
     </table>
   )
@@ -188,7 +277,7 @@ const Page2 = () => {
 
 const Page3 = () => {
 
-  const { data, loading, error } = useQuery(getTires);
+  const { data, loading, error } = useQuery(getTires, { fetchPolicy: "network-only" });
 
   if (loading) {
     return <div>Loading...</div>;
@@ -276,3 +365,8 @@ function App() {
 }
 
 export default App;
+
+
+/*
+
+    */
