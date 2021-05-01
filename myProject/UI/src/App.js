@@ -16,6 +16,31 @@ const loginQuery = gql`
   }
 `;
 
+const searchQuery = gql`
+  query($keyword: String!) {
+    search(keyword: $keyword) {
+      tires {
+        _id,
+        brand,
+        model,
+        fullPrice,
+        singlePrice,
+        stock
+      }
+      customers {
+        _id,
+        name,
+        carNumber,
+        phone,
+        carType, 
+        tireSize,
+        miles, 
+        description
+      }
+    }
+  }
+`;
+
 const getTires = gql`
   query {
     tires {
@@ -147,21 +172,89 @@ const Page0 = () => {
 }
 
 const Page1 = () => {
-  const [showResult, setShowResult] = React.useState(false);
+
+  const [search, setSearch] = React.useState("");
+
+  const [executeSearch, { data, loading, error }] = useLazyQuery(searchQuery);
 
   return (
     <>
       <h1>Search anything!</h1>
-      <input /><button onClick={() => setShowResult(true)}>Search</button>
-      {showResult && (
+      <input value={search} onChange={event => setSearch(event.target.value)} />
+      <button onClick={() => executeSearch({ variables: { keyword: search }})}>Search</button>
+      {loading && (
+        <div>Loading...</div>
+      )}
+      {error && (
+        <div>Error: {error.message}</div>
+      )}
+      {data && (
         <>
           <br></br>
-          <div>Tire 30mm goodyear 5</div>
-          <div>Tire 30mm goodyear 7</div>
-          <div>Tire 30mm goodyear 32</div>
-          <div>Tire 50mm goodyear 11</div>
-          <div>Tire 50mm goodyear 15</div>
-          <div>Tire 50mm goodyear 17</div>
+          
+          {data.search.tires.length === 0 && data.search.customers.length === 0 && (
+            <h2>No results</h2>
+          )}
+          
+          {data.search.tires.length > 0 && (
+            <>
+              <h2>Tires</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Brand</th>
+                    <th>Model</th>
+                    <th>Stock</th>
+                    <th>Single Price</th>
+                    <th>Full Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.search.tires.map(tire => (
+                    <tr>
+                      <td>{tire.brand}</td>
+                      <td>{tire.model}</td>
+                      <td>{tire.stock}</td>
+                      <td>{tire.singlePrice}</td>
+                      <td>{tire.fullPrice}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
+
+          {data.search.customers.length > 0 && (
+            <>
+              <h2>Customers</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Phone number</th>
+                    <th>Car type</th>
+                    <th>Car number</th>
+                    <th>Tire size</th>
+                    <th>Mileage</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {data.search.customers.map(customer => (
+                  <tr>
+                    <td>{customer.name}</td>
+                    <td>{customer.phone}</td>
+                    <td>{customer.carType}</td>
+                    <td>{customer.carNumber}</td>
+                    <td>{customer.tireSize}</td>
+                    <td>{customer.miles} miles</td>
+                    <td>{customer.description}</td>
+                  </tr>
+                ))}
+                </tbody>
+              </table>
+            </>
+          )}
         </>
       )}
     </>
@@ -226,7 +319,7 @@ const Page2 = () => {
           <th>Car number</th>
           <th>Tire size</th>
           <th>Mileage</th>
-          <th>Other</th>
+          <th>Description</th>
         </tr>
       </thead>
       <tbody>
