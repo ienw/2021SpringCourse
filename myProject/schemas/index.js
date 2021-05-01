@@ -30,4 +30,15 @@ const linkSchema = gql`
    }
 `;
 
-export default [linkSchema, customerSchema, tireSchema, internalTransactionsSchema, userSchema];
+const searchSchema = gql`
+  type SearchResult {
+    customers: [Customer!]!
+    tires: [Tire!]!
+  }
+
+  extend type Query {
+    search(keyword: String!): SearchResult!
+  }
+`;
+
+export default [linkSchema, customerSchema, tireSchema, internalTransactionsSchema, userSchema, searchSchema];

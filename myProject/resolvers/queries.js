@@ -17,6 +17,14 @@ const queries = {
       throw new AuthenticationError("Login failed");
     }
   },
+  search: async (parent, args, { req, res }) => {
+    const tireResult = await tires.find({ $text: { $search: args.keyword } })
+    const customerResult = await customers.find({ $text: { $search: args.keyword } })
+    return {
+      tires: tireResult,
+      customers: customerResult,
+    }
+  },
   customers: (parent, args, context) => {
     return customers.find({})
   },
