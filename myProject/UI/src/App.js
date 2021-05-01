@@ -277,7 +277,36 @@ const Page2 = () => {
 
 const Page3 = () => {
 
-  const { data, loading, error } = useQuery(getTires, { fetchPolicy: "network-only" });
+  const { data, loading, error, refetch } = useQuery(getTires, { fetchPolicy: "network-only" });
+  const isLoggedIn = localStorage.getItem("token")
+
+  const [brand, setBrand] = React.useState("");
+  const [model, setModel] = React.useState("");
+  const [stock, setStock] = React.useState("");
+  const [singlePrice, setSinglePrice] = React.useState("");
+  const [fullPrice, setFullPrice] = React.useState("");
+
+  const [mutate] = useMutation(createTire);
+  
+  const submitTire = () => {
+    mutate({
+      variables: {
+        brand,
+        model,
+        stock: Number(stock),
+        singlePrice: Number(singlePrice),
+        fullPrice: Number(fullPrice),
+      },
+      update: () => {
+        refetch();
+        setBrand("");
+        setModel("");
+        setStock("");
+        setSinglePrice("");
+        setFullPrice("");
+      }
+    })
+  }
 
   if (loading) {
     return <div>Loading...</div>;
@@ -295,29 +324,45 @@ const Page3 = () => {
         <tr>
           <th>Brand</th>
           <th>Model</th>
-          <th>price</th>
-          <th>sold units</th>
-          <th>inventory</th>
+          <th>Stock</th>
+          <th>Single Price</th>
+          <th>Full Price</th>
         </tr>
       </thead>
       <tbody>
+      {isLoggedIn && (
+        <tr>
+          <td>
+            <input value={brand} onChange={event => setBrand(event.target.value)} />
+          </td>
+          <td>
+            <input value={model} onChange={event => setModel(event.target.value)}/>
+          </td>
+          <td>
+            <input value={stock} onChange={event => setStock(event.target.value)} />
+          </td>
+          <td>
+            <input value={singlePrice} onChange={event => setSinglePrice(event.target.value)} />
+          </td>
+          <td>
+            <div style={{display: "flex", alignItems: "center"}}>
+              <input value={fullPrice} onChange={event => setFullPrice(event.target.value)}/>
+              <button style={{ height: "max-content"}} onClick={submitTire}>Add tire</button>
+            </div>
+          </td>
+        </tr>
+      )}
         {data.tires.map(tire => 
           <tr>
             <td>{tire.brand}</td>
             <td>{tire.model}</td>
-            <td>{tire.fullPrice}</td>
-            <td>N / A</td>
             <td>{tire.stock}</td>
+            <td>{tire.singlePrice}</td>
+            <td>{tire.fullPrice}</td>
+            
+            
           </tr>
         )}
-        <tr>
-          <td><input /></td>
-          <td><input /></td>
-          <td><input /></td>
-          <td><input /></td>
-          <td><input /></td>
-          <td><input /><button>Add</button></td>
-        </tr>
       </tbody>
     </table>
   )
