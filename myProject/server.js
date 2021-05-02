@@ -25,6 +25,9 @@ import db from './db.js'
 
   
     const app = express();
+
+    app.use(express.static('UI/build/'))
+
     server.applyMiddleware({app});
 
     app.listen({port: 3000}, () =>
