@@ -1,14 +1,19 @@
+Graphql API project
 
+The api is for a tire shop inventory management system
 
-HOMEWORK:
+Setup
+```
+npm install
+cd UI
+npm install
+```
 
-1. Create a new database named myProject in mongoCompass
+Start developing
+```
+node server.js
 
-kind of done for tires
-2. Define graphql schema for tires
-3. Define graphql query and mutation for tires
-4. Define graphql resolvers for query and mutation for tires
-
-5. test running with node server.js and opening the localhost in browser
-
-Maybe do the same for Customers if tires is working?
+# in another shell
+cd UI
+npm start
+```
