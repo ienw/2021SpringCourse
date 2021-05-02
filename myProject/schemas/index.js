@@ -2,6 +2,7 @@ import { gql } from 'apollo-server-express';
 import tireSchema from './tireSchema.js';
 import customerSchema from './customerSchema.js';
 import internalTransactionsSchema from './internalTransactionsSchema.js';
+import customerTransactionsSchema from './customerTransactionsSchema.js';
 
 const userSchema = gql`
   type User {
@@ -41,4 +42,12 @@ const searchSchema = gql`
   }
 `;
 
-export default [linkSchema, customerSchema, tireSchema, internalTransactionsSchema, userSchema, searchSchema];
+export default [
+  linkSchema,
+  customerSchema,
+  tireSchema,
+  internalTransactionsSchema,
+  customerTransactionsSchema,
+  userSchema,
+  searchSchema
+];

@@ -4,6 +4,7 @@ import { login } from '../passport/authController.js';
 const tires = models.tires;
 const customers = models.customers;
 const internalTransactions = models.internalTransactions;
+const customerTransactions = models.customerTransactions;
 
 const queries = {
   login: async (parent, args, { req, res }) => {
@@ -33,6 +34,9 @@ const queries = {
   },
   internalTransactions: (parent, args, context) => {
     return internalTransactions.find({})
+  },
+  customerTransactions: (parent, args, context) => {
+    return customerTransactions.find({})
   },
 }
 
