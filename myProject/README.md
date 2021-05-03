@@ -2,6 +2,25 @@ Graphql API project
 
 The api is for a tire shop inventory management system
 
+Graphql queries and mutations
+```
+queries:
+  login
+  search
+  tires
+  customers
+  internalTransactions
+  customerTransactions
+
+mutations:
+  createCustomer
+  createTire
+  createInternalTransaction
+  createCustomerTransaction
+```
+Edit and delete mutations are on the TODO list, but there
+was not enough time to implement them because other things were prioritized.
+
 Setup
 ```
 npm install
