@@ -1,5 +1,7 @@
 Graphql API project
 
+[demo](http://138.68.93.175:3000/)
+
 The api is for a tire shop inventory management system
 
 Graphql queries and mutations
