@@ -475,11 +475,11 @@ function App() {
   return (
     <div className="App">
       <nav>
-        <span style={{ padding: "10px 30px"}} onClick={() => setPage("1")}>search</span>
-        <span style={{ padding: "10px 30px"}} onClick={() => setPage("2")}>customers</span>
-        <span style={{ padding: "10px 30px"}} onClick={() => setPage("3")}>Inventory</span>
-        <span style={{ padding: "10px 30px"}} onClick={() => setPage("4")}>Statistics</span>
-        <span style={{ padding: "10px 30px"}} onClick={() => setPage("0")}>Admin</span>
+        <span style={{ padding: "10px 30px", cursor: "pointer"}} onClick={() => setPage("1")}>Search</span>
+        <span style={{ padding: "10px 30px", cursor: "pointer"}} onClick={() => setPage("2")}>Customers</span>
+        <span style={{ padding: "10px 30px", cursor: "pointer"}} onClick={() => setPage("3")}>Inventory</span>
+        <span style={{ padding: "10px 30px", cursor: "pointer"}} onClick={() => setPage("4")}>Statistics</span>
+        <span style={{ padding: "10px 30px", cursor: "pointer"}} onClick={() => setPage("0")}>Admin</span>
       </nav>
       <header className="App-header">
         {page === "1" && (
