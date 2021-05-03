@@ -1,5 +1,6 @@
 import models from '../model.js';
 import { login } from '../passport/authController.js';
+import { AuthenticationError } from 'apollo-server-express';
 
 const tires = models.tires;
 const customers = models.customers;
